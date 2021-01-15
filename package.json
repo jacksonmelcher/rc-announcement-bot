@@ -17,6 +17,7 @@
         "@babel/register": "^7.12.10",
         "axios": "^0.21.1",
         "express": "^4.17.1",
+        "log4js": "^6.3.0",
         "moment": "^2.29.1",
         "moment-timezone": "^0.5.32",
         "pg": "^8.5.1",
