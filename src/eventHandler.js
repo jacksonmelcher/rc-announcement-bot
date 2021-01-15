@@ -1,8 +1,13 @@
-import { createReminder } from './createReminder';
 import { Service, Bot } from 'ringcentral-chatbot/dist/models';
 import moment from 'moment-timezone';
+import { findTeam, createTeam, clearAll } from './database/index';
+import log4js from 'log4js';
 
-import { issueText, noArgsText, joinedGroup } from './responses/index';
+log4js.configure({
+    appenders: { out: { type: 'stdout' } },
+    categories: { default: { appenders: ['out'], level: 'info' } },
+});
+const logger = log4js.getLogger('CREATE PROFILE');
 
 export const eventHandler = async (event) => {
     const { type } = event;
@@ -18,15 +23,46 @@ export const eventHandler = async (event) => {
 };
 
 const handleMessage4Bot = async (event) => {
-    const { bot, group } = event;
+    const { text, group, bot } = event;
+    let service = null;
+    let response = 'default';
 
-    // FIXME Need to add some sort of check to see if the bot has been added to the groups already.
+    service = await findTeam(group.id);
 
-    const mode = await determineResponse(event);
+    let args = text.split(' ');
+    logger.info(`Args [ ${args} ]`);
+    switch (text.toLowerCase()) {
+        case 'enable':
+            if (service !== null) {
+                logger.info(`User already exists`);
+                return {
+                    text: 'Automated announcements are already enabled',
+                };
+            }
+            let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
+            console.log(res.data);
 
-    if (mode) {
-        const message = await createReminder(event);
+            await createTeam(event, res.data.description);
+
+            return {
+                text: 'Automatic message notifications have been enabled.',
+            };
+            break;
+        case 'disable':
+            logger.trace('Case [DISABLE]');
+            await clearTeam(group.name, group.id);
+            response = {
+                text: 'Freshservice notifications have been disabled.',
+            };
+
+            break;
+        case 'clear':
+            await clearAll(event);
+        default:
+            logger.warn(`Not a valid command: ${text}`);
+            response = { text: 'Command not valid' };
     }
+    return response;
 };
 
 const determineResponse = async (event) => {
@@ -130,7 +166,7 @@ const handleBotJoinedGroup = async (event) => {
     const { bot, group } = event;
 
     let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
-    console.log(res.data.description);
+    console.log(res.data);
     await bot.sendMessage(group.id, {
         text: `This is a preview of the announcement: \n\n${res.data.description}`,
     });
