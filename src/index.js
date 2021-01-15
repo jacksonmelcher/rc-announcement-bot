@@ -2,13 +2,15 @@ import axios from 'axios';
 import createApp from 'ringcentral-chatbot/dist/apps';
 
 import { eventHandler } from './eventHandler';
-import remind from './remind';
+import announce from './announce';
 
 const handle = async (event) => {
     await eventHandler(event);
 };
 
-setInterval(() => remind(), 5000);
+//  ONE WEEK
+// setInterval(() => remind(), 604800000);
+setInterval(() => announce(), 5000);
 
 const app = createApp(handle);
 
