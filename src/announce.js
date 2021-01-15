@@ -7,12 +7,18 @@ const announce = async () => {
     let sorted = [];
     services = await Service.findAll({ where: { name: 'Announce' } });
     services[0].dataValues.groupId;
+
     if (services.length > 0) {
         let res = await bot.rc.get(
             `restapi/v1.0/glip/teams/${services[0].dataValues.groupId}`
         );
-        console.log(res.data.description);
-        bot.sendMessage(group.id, { text: res.data.description });
+
+        setInterval(() => {
+            console.log(res.data.description);
+            bot.sendMessage(services[0].dataValues.groupId, {
+                text: res.data.description,
+            });
+        }, 10000);
     } else {
         return;
     }
