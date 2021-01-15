@@ -10,7 +10,7 @@ const handle = async (event) => {
 
 //  ONE WEEK
 // setInterval(() => remind(), 604800000);
-setInterval(() => announce(), 5000);
+// setInterval(() => announce(), 5000);
 
 const app = createApp(handle);
 
