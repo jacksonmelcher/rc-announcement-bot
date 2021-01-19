@@ -2,6 +2,7 @@ import { Service, Bot } from 'ringcentral-chatbot/dist/models';
 import moment from 'moment-timezone';
 import { findTeam, createTeam, clearAll } from './database/index';
 import log4js from 'log4js';
+import cron from 'node-cron';
 
 log4js.configure({
     appenders: { out: { type: 'stdout' } },
@@ -33,27 +34,55 @@ const handleMessage4Bot = async (event) => {
     logger.info(`Args [ ${args} ]`);
     switch (text.toLowerCase()) {
         case 'enable':
-            if (service !== null) {
-                logger.info(`User already exists`);
-                return {
-                    text: 'Automated announcements are already enabled',
-                };
-            }
-            let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
-            console.log(res.data);
+            console.log('STARTING CRON');
+            const task = cron.schedule(
+                '*/10 * * * * *',
+                () => {
+                    console.log('HEY MAN');
+                },
+                {
+                    scheduled: false,
+                }
+            );
 
-            await createTeam(event, res.data.description);
+            await Service.create({
+                name: `cron`,
+                groupId: group.id,
+                botId: bot.id,
+                data: {
+                    task: task,
+                },
+            });
+            task.start();
+            // if (service !== null) {
+            //     logger.info(`User already exists`);
+            //     return {
+            //         text: 'Automated announcements are already enabled',
+            //     };
+            // }
+            // let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
+            // console.log(res.data);
 
-            return {
-                text: 'Automatic message notifications have been enabled.',
-            };
+            // await createTeam(event, res.data.description);
+
+            // return {
+            //     text: 'Automatic message notifications have been enabled.',
+            // };
             break;
         case 'disable':
             logger.trace('Case [DISABLE]');
-            await clearTeam(group.name, group.id);
-            response = {
-                text: 'Freshservice notifications have been disabled.',
-            };
+            const { dataValues } = await Service.findOne({
+                where: { name: 'cron' },
+            });
+
+            console.log('temp :>> ', dataValues.data);
+
+            dataValues.data.stop();
+            console.log('task stopped');
+            // await clearTeam(group.name, group.id);
+            // response = {
+            //     text: 'Freshservice notifications have been disabled.',
+            // };
 
             break;
         case 'clear':
