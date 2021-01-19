@@ -16,6 +16,7 @@
         "@babel/preset-env": "^7.12.11",
         "@babel/register": "^7.12.10",
         "axios": "^0.21.1",
+        "cron-parser": "^3.1.0",
         "express": "^4.17.1",
         "log4js": "^6.3.0",
         "moment": "^2.29.1",
