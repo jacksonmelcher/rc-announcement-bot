@@ -9,6 +9,7 @@ log4js.configure({
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
 const logger = log4js.getLogger('CREATE PROFILE');
+const every10Seconds = '*/10 * * * * *';
 
 export const eventHandler = async (event) => {
     const { type } = event;
@@ -35,25 +36,17 @@ const handleMessage4Bot = async (event) => {
     switch (text.toLowerCase()) {
         case 'enable':
             console.log('STARTING CRON');
-            const task = cron.schedule(
-                '*/10 * * * * *',
-                () => {
-                    console.log('HEY MAN');
-                },
-                {
-                    scheduled: false,
-                }
-            );
-
+            await remove();
             await Service.create({
                 name: `cron`,
                 groupId: group.id,
                 botId: bot.id,
                 data: {
-                    task: task,
+                    expression: every10Seconds,
+                    options: { utc: true },
                 },
             });
-            task.start();
+
             // if (service !== null) {
             //     logger.info(`User already exists`);
             //     return {
@@ -127,25 +120,25 @@ const clear = async ({ bot, userId }) => {
     await bot.sendMessage(group.id, res);
 };
 
-const remove = async (args, { bot, group, userId }) => {
-    if (args[1] === undefined) {
-        return {
-            text: "Please add an ID number.Type **@Remind -l** to view ID's",
-        };
-    }
-    const services = await Service.findAll({
-        where: { name: 'Remind', userId: userId, id: args[1] },
-    });
-    if (services.length === 0) {
-        await bot.sendMessage(group.id, {
-            text: 'Could not find Reminder with that ID',
-        });
-    } else {
-        let text = services[0].data.text;
-        await services[0].destroy();
-        return { text: `${text}  -  deleted.` };
-    }
-};
+// const remove = async (args, { bot, group, userId }) => {
+//     if (args[1] === undefined) {
+//         return {
+//             text: "Please add an ID number.Type **@Remind -l** to view ID's",
+//         };
+//     }
+//     const services = await Service.findAll({
+//         where: { name: 'Remind', userId: userId, id: args[1] },
+//     });
+//     if (services.length === 0) {
+//         await bot.sendMessage(group.id, {
+//             text: 'Could not find Reminder with that ID',
+//         });
+//     } else {
+//         let text = services[0].data.text;
+//         await services[0].destroy();
+//         return { text: `${text}  -  deleted.` };
+//     }
+// };
 const list = async ({ bot, userId, group }) => {
     const services = await Service.findAll({
         where: { name: 'Remind', userId: userId },
@@ -200,3 +193,13 @@ const handleBotJoinedGroup = async (event) => {
         text: `This is a preview of the announcement: \n\n${res.data.description}`,
     });
 };
+
+async function remove(userId, groupId) {
+    let service = await Service.findOne({
+        where: { name: 'cron' },
+    });
+    console.log('service :>> ', service);
+    await service.destroy();
+
+    console.log('Reminder removed');
+}
