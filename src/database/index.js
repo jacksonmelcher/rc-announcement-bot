@@ -1,3 +1,3 @@
 export { findTeam } from './findTeam';
-export { createTeam } from './createTeam.js';
+export { createSchedule } from './createSchedule.js';
 export { clearAll } from './clearAll.js';
