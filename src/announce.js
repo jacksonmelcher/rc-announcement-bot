@@ -3,28 +3,45 @@ import cronParser from 'cron-parser';
 import moment from 'moment-timezone';
 
 const announce = async () => {
-    const every10Seconds = '*/10 * * * * *';
+    const every10Seconds = '*****';
+
+    let services = await Service.findAll({ where: { name: 'cron' } });
 
     const [{ dataValues }] = await Bot.findAll();
 
-    let services = await Service.findAll({ where: { name: 'cron' } });
-    console.log(services.length);
-
     for (const s of services) {
-        const interval = cronParser.parseExpression(
-            s.data.expression,
-            s.data.options
-        );
+        const bot = await Bot.findByPk(s.botId);
+        const groupId = s.groupId;
         const currentTimestamp = moment
-            .tz(new Date(), s.data.options.utc ? 'utc' : s.data.options.tz)
+            .tz(
+                new Date(),
+                service.data.options.utc ? 'utc' : service.data.options.tz
+            )
             .seconds(0)
             .milliseconds(0);
+        // const currentTimestamp = moment.tz(new Date(), 'America/Los_Angeles');
+        console.log('currentTimestamp :>> ', currentTimestamp.toString());
+        const interval = cronParser.parseExpression('* * * * *', {
+            utc: true,
+        });
+        console.log('currentTimestamp :>> ', currentTimestamp);
         const prevTimestamp = interval.prev()._date;
 
+        console.log(currentTimestamp - prevTimestamp);
         if (currentTimestamp - prevTimestamp === 0) {
-            console.log('REMINDER!');
-            await remove(710754310);
+            const bot = await Bot.findByPk(s.botId);
+            try {
+                console.log('Reminded at: ' + currentTimestamp);
+                // await bot.sendMessage(s.groupId, { text: s.data.message })
+            } catch (e) {
+                // catch the exception so that it won't break the for loop
+                console.error(e);
+            }
+            console.log(currentTimestamp - prevTimestamp);
+
+            // console.log(interval.next().toString());
         }
+        // console.log('interval :>> ', interval.next().toString());
     }
 };
 

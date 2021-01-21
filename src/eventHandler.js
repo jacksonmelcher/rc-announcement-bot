@@ -9,8 +9,10 @@ log4js.configure({
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
 const logger = log4js.getLogger('CREATE PROFILE');
-const every10Seconds = '*/10 * * * * *';
-
+const args = '* * * * *';
+const tokens = args.split(/\s+/);
+const expression = tokens.slice(0, 5).join(' ');
+console.log('expression :>> ', expression);
 export const eventHandler = async (event) => {
     const { type } = event;
 
@@ -42,7 +44,7 @@ const handleMessage4Bot = async (event) => {
                 groupId: group.id,
                 botId: bot.id,
                 data: {
-                    expression: every10Seconds,
+                    expression: expression,
                     options: { utc: true },
                 },
             });
