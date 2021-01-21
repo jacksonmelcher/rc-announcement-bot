@@ -1,15 +1,14 @@
 import { Service, Bot } from 'ringcentral-chatbot/dist/models';
 import moment from 'moment-timezone';
-import { findTeam, createTeam, clearAll } from './database/index';
+import { findTeam, createSchedule, clearAll } from './database/index';
 import log4js from 'log4js';
-import cron from 'node-cron';
 
 log4js.configure({
     appenders: { out: { type: 'stdout' } },
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
 const logger = log4js.getLogger('CREATE PROFILE');
-const args = '* * * * *';
+const args = '0 19 * * 1,3,5';
 const tokens = args.split(/\s+/);
 const expression = tokens.slice(0, 5).join(' ');
 console.log('expression :>> ', expression);
@@ -37,17 +36,26 @@ const handleMessage4Bot = async (event) => {
     logger.info(`Args [ ${args} ]`);
     switch (text.toLowerCase()) {
         case 'enable':
-            console.log('STARTING CRON');
-            await remove();
-            await Service.create({
-                name: `cron`,
-                groupId: group.id,
-                botId: bot.id,
-                data: {
-                    expression: expression,
-                    options: { utc: true },
-                },
-            });
+            logger.trace('Case [ENABLE]');
+            if (service !== null) {
+                logger.info(`User already exists`);
+                response = {
+                    text:
+                        'Description notifications have already been enabled for this team.',
+                };
+            } else {
+                await createSchedule(
+                    event,
+                    expression,
+                    'This is a test message',
+                    { utc: true }
+                );
+                return {
+                    text: 'Description notifications have been enabled.',
+                };
+            }
+
+            break;
 
             // if (service !== null) {
             //     logger.info(`User already exists`);
@@ -67,12 +75,12 @@ const handleMessage4Bot = async (event) => {
         case 'disable':
             logger.trace('Case [DISABLE]');
             const { dataValues } = await Service.findOne({
-                where: { name: 'cron' },
+                where: { name: 'Announce' },
             });
 
             console.log('temp :>> ', dataValues.data);
 
-            dataValues.data.stop();
+            await remove();
             console.log('task stopped');
             // await clearTeam(group.name, group.id);
             // response = {
@@ -198,7 +206,7 @@ const handleBotJoinedGroup = async (event) => {
 
 async function remove(userId, groupId) {
     let service = await Service.findOne({
-        where: { name: 'cron' },
+        where: { name: 'Announce' },
     });
     console.log('service :>> ', service);
     await service.destroy();
