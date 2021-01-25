@@ -35,6 +35,7 @@ const handleMessage4Bot = async (event) => {
     let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
 
     service = await findTeam(group.id);
+    console.log('event :>> ', event);
 
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
@@ -68,7 +69,7 @@ const handleMessage4Bot = async (event) => {
 
             console.log('temp :>> ', dataValues.data);
 
-            await remove();
+            await remove(event);
             console.log('task stopped');
             // await clearTeam(group.name, group.id);
             response = {
@@ -83,39 +84,6 @@ const handleMessage4Bot = async (event) => {
             response = { text: 'Command not valid' };
     }
     return response;
-};
-
-const determineResponse = async (event) => {
-    const { text, group, bot } = event;
-    let args = [];
-    if (typeof text !== 'undefined') {
-        args = text.split(' ');
-        if (text === 't') {
-            await handleBotJoinedGroup(event);
-        }
-    } else {
-        return false;
-    }
-};
-
-const removeAll = async ({ userId }) => {
-    const service = await Service.findAll({
-        where: { name: 'Remind', userId: userId },
-    });
-
-    if (service.length === 0) {
-        return { text: 'Array empty' };
-    } else {
-        for (let i = 0; i < service.length; i++) {
-            // console.log("SERVICE: " + service[i].userId);
-            await service[i].destroy();
-        }
-        return { text: 'Cleared' };
-    }
-};
-const clear = async ({ bot, userId }) => {
-    const res = await removeAll(userId);
-    await bot.sendMessage(group.id, res);
 };
 
 // const remove = async (args, { bot, group, userId }) => {
@@ -137,50 +105,51 @@ const clear = async ({ bot, userId }) => {
 //         return { text: `${text}  -  deleted.` };
 //     }
 // };
-const list = async ({ bot, userId, group }) => {
-    const services = await Service.findAll({
-        where: { name: 'Remind', userId: userId },
-    });
 
-    let tempArr = [];
-    let tempField = {
-        title: null,
-        value: null,
-        style: null,
-    };
+// const list = async ({ bot, userId, group }) => {
+//     const services = await Service.findAll({
+//         where: { name: 'Remind', userId: userId },
+//     });
 
-    if (services.length === 0) {
-        await bot.sendMessage(group.id, { text: 'No reminders' });
-    } else {
-        let sorted = services.sort(
-            (a, b) => moment(a.data.reminderTime) - moment(b.data.reminderTime)
-        );
-        for (const s of sorted) {
-            tempField = {
-                title: moment
-                    .tz(s.data.reminderTime, s.data.timezone)
-                    .format('MMMM Do YYYY, h:mm a'),
+//     let tempArr = [];
+//     let tempField = {
+//         title: null,
+//         value: null,
+//         style: null,
+//     };
 
-                value: `*${s.data.reminderText}* \n**ID:** ${s.id.toString()}`,
-                style: 'Long',
-            };
-            tempArr.push(tempField);
-        }
+//     if (services.length === 0) {
+//         await bot.sendMessage(group.id, { text: 'No reminders' });
+//     } else {
+//         let sorted = services.sort(
+//             (a, b) => moment(a.data.reminderTime) - moment(b.data.reminderTime)
+//         );
+//         for (const s of sorted) {
+//             tempField = {
+//                 title: moment
+//                     .tz(s.data.reminderTime, s.data.timezone)
+//                     .format('MMMM Do YYYY, h:mm a'),
 
-        await bot.sendMessage(group.id, {
-            attachments: [
-                {
-                    type: 'Card',
-                    text: '**__Current Reminders__**',
-                    fields: tempArr,
-                    footnote: {
-                        text: 'Created and maintained by RC on RC',
-                    },
-                },
-            ],
-        });
-    }
-};
+//                 value: `*${s.data.reminderText}* \n**ID:** ${s.id.toString()}`,
+//                 style: 'Long',
+//             };
+//             tempArr.push(tempField);
+//         }
+
+//         await bot.sendMessage(group.id, {
+//             attachments: [
+//                 {
+//                     type: 'Card',
+//                     text: '**__Current Reminders__**',
+//                     fields: tempArr,
+//                     footnote: {
+//                         text: 'Created and maintained by RC on RC',
+//                     },
+//                 },
+//             ],
+//         });
+//     }
+// };
 
 const handleBotJoinedGroup = async (event) => {
     const { bot, group } = event;
@@ -194,11 +163,11 @@ const handleBotJoinedGroup = async (event) => {
     });
 };
 
-async function remove(userId, groupId) {
+async function remove({ userId, group }) {
     let service = await Service.findOne({
-        where: { name: 'Announce' },
+        where: { name: 'Announce', userId: userId, groupId: group.id },
     });
-    console.log('service :>> ', service);
+
     await service.destroy();
 
     console.log('Reminder removed');
