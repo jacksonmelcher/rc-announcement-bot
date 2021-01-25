@@ -1,5 +1,4 @@
-import { Service, Bot } from 'ringcentral-chatbot/dist/models';
-import moment from 'moment-timezone';
+import { Service } from 'ringcentral-chatbot/dist/models';
 import { findTeam, createSchedule, clearAll } from './database/index';
 import log4js from 'log4js';
 
@@ -163,13 +162,3 @@ const handleBotJoinedGroup = async (event) => {
             `\n \n Customization of anouncements and times will be coming in the future.`,
     });
 };
-
-async function remove({ userId, group }) {
-    let service = await Service.findOne({
-        where: { name: 'Announce', userId: userId, groupId: group.id },
-    });
-
-    await service.destroy();
-
-    console.log('Reminder removed');
-}
