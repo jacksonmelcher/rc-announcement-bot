@@ -8,16 +8,18 @@ log4js.configure({
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
 const logger = log4js.getLogger('CREATE PROFILE');
-const args = '0 11 * * 1';
+const args = '0 10 * * 1';
 const tokens = args.split(/\s+/);
 const expression = tokens.slice(0, 5).join(' ');
 console.log('expression :>> ', expression);
+
 export const eventHandler = async (event) => {
-    const { type } = event;
+    const { type, bot, group } = event;
 
     switch (type) {
         case 'Message4Bot':
-            await handleMessage4Bot(event);
+            let response = await handleMessage4Bot(event);
+            await bot.sendMessage(group.id, response);
             break;
         case 'BotJoinGroup':
             await handleBotJoinedGroup(event);
@@ -29,6 +31,8 @@ const handleMessage4Bot = async (event) => {
     const { text, group, bot } = event;
     let service = null;
     let response = 'default';
+
+    let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
 
     service = await findTeam(group.id);
 
@@ -51,7 +55,7 @@ const handleMessage4Bot = async (event) => {
                     { utc: true }
                 );
                 return {
-                    text: 'Description notifications have been enabled.',
+                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${res.data.description}`,
                 };
             }
 
@@ -67,9 +71,9 @@ const handleMessage4Bot = async (event) => {
             await remove();
             console.log('task stopped');
             // await clearTeam(group.name, group.id);
-            // response = {
-            //     text: 'Freshservice notifications have been disabled.',
-            // };
+            response = {
+                text: 'Announcement notifications have been disabled.',
+            };
 
             break;
         case 'clear':
@@ -184,7 +188,9 @@ const handleBotJoinedGroup = async (event) => {
     let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
     console.log(res.data);
     await bot.sendMessage(group.id, {
-        text: `This is a preview of the announcement: \n\n${res.data.description}`,
+        text:
+            `Hi, I'm announcement bot. I will announce the team description every Monday at 10:00 am PST. ` +
+            `This is a preview of the announcement: \n\n${res.data.description}`,
     });
 };
 
