@@ -14,9 +14,6 @@ const handle = async (event) => {
     await eventHandler(event);
 };
 
-//  ONE WEEK
-// setInterval(() => remind(), 604800000);\
-
 const app = createApp(handle);
 
 app.listen(process.env.PORT || 3000, () => console.log('Server is running...'));
