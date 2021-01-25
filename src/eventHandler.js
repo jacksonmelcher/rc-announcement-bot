@@ -158,8 +158,9 @@ const handleBotJoinedGroup = async (event) => {
     console.log(res.data);
     await bot.sendMessage(group.id, {
         text:
-            `Hi, I'm announcement bot. I will announce the team description every Monday at 10:00 am PST. ` +
-            `This is a preview of the announcement: \n\n${res.data.description}`,
+            `Hi, I'm announcement bot. I will announce the team description every Monday at 10:00 am PST.` +
+            `This is a preview of the announcement: \n\n${res.data.description}. ` +
+            `\n \n Customization of anouncements and times will be coming in the future.`,
     });
 };
 
