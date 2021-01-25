@@ -6,6 +6,7 @@ log4js.configure({
     appenders: { out: { type: 'stdout' } },
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
+
 const logger = log4js.getLogger('CREATE PROFILE');
 const args = '0 10 * * 1';
 const tokens = args.split(/\s+/);

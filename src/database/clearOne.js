@@ -5,6 +5,7 @@ log4js.configure({
     appenders: { out: { type: 'stdout' } },
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
+
 const logger = log4js.getLogger(`CLEAR ONE `);
 
 async function clearOne({ userId, group }) {
