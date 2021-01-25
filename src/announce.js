@@ -24,7 +24,7 @@ const announce = async () => {
             tz: 'America/Los_Angeles',
         });
 
-        console.log('EXPRESSION: ' + '0 19 * * 1');
+        console.log('EXPRESSION: ' + s.data.expression);
 
         const prevTimestamp = interval.prev()._date;
 
