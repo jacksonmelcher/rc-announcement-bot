@@ -8,7 +8,7 @@ log4js.configure({
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
 const logger = log4js.getLogger('CREATE PROFILE');
-const args = '0 19 * * 1,3,5';
+const args = '0 11 * * 1';
 const tokens = args.split(/\s+/);
 const expression = tokens.slice(0, 5).join(' ');
 console.log('expression :>> ', expression);
@@ -55,22 +55,6 @@ const handleMessage4Bot = async (event) => {
                 };
             }
 
-            break;
-
-            // if (service !== null) {
-            //     logger.info(`User already exists`);
-            //     return {
-            //         text: 'Automated announcements are already enabled',
-            //     };
-            // }
-            // let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
-            // console.log(res.data);
-
-            // await createTeam(event, res.data.description);
-
-            // return {
-            //     text: 'Automatic message notifications have been enabled.',
-            // };
             break;
         case 'disable':
             logger.trace('Case [DISABLE]');
