@@ -15,15 +15,12 @@ const announce = async () => {
     const [{ dataValues }] = await Bot.findAll();
 
     for (const s of services) {
-        const bot = await Bot.findByPk(s.botId);
-        const groupId = s.groupId;
         const currentTimestamp = moment
             .tz(new Date(), 'America/Los_Angeles')
             .seconds(0)
             .milliseconds(0);
-        // const currentTimestamp = moment.tz(new Date(), 'America/Los_Angeles');
-        // console.log('currentTimestamp :>> ', currentTimestamp.toString());
-        const interval = cronParser.parseExpression('0 9 * * 1', {
+
+        const interval = cronParser.parseExpression(s.data.expression, {
             tz: 'America/Los_Angeles',
         });
 
@@ -57,15 +54,5 @@ const announce = async () => {
         );
     }
 };
-
-async function remove(userId, groupId) {
-    let service = await Service.findOne({
-        where: { name: 'cron' },
-    });
-
-    await service.destroy();
-
-    console.log('Reminder removed');
-}
 
 export default announce;
