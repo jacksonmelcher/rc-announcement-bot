@@ -24,4 +24,4 @@ setInterval(
 );
 
 logger.info('Starting loop.');
-setInterval(() => announce(), 5000);
+// setInterval(() => announce(), 5000);
