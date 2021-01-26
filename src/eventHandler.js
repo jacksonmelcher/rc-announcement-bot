@@ -7,11 +7,11 @@ log4js.configure({
     categories: { default: { appenders: ['out'], level: 'info' } },
 });
 
-const logger = log4js.getLogger('CREATE PROFILE');
-const args = '0 10 * * 1';
-const tokens = args.split(/\s+/);
-const expression = tokens.slice(0, 5).join(' ');
-console.log('expression :>> ', expression);
+const logger = log4js.getLogger('EVENT HANDLER');
+const onceAWeek = '0 10 * * 1';
+const onceAMinute = '* * * * * *';
+// const tokens = args.split(/\s+/);
+// const expression = tokens.slice(0, 5).join(' ');
 
 export const eventHandler = async (event) => {
     const { type, bot, group } = event;
@@ -34,14 +34,12 @@ const handleMessage4Bot = async (event) => {
 
     let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
 
-    service = await findTeam(group.id);
-    console.log('event :>> ', event);
-
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
     switch (text.toLowerCase()) {
         case 'enable':
             logger.trace('Case [ENABLE]');
+            service = await findTeam(group.id);
             if (service !== null) {
                 logger.info(`User already exists`);
                 response = {
@@ -51,15 +49,39 @@ const handleMessage4Bot = async (event) => {
             } else {
                 await createSchedule(
                     event,
-                    expression,
+                    onceAWeek,
                     'This is a test message',
-                    { utc: true }
+                    {
+                        utc: true,
+                    }
                 );
-                return {
+                response = {
+                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${res.data.description}`,
+                };
+                break;
+            }
+        case 'enable test':
+            logger.trace('Case [ENABLE TEST]');
+            service = await findTeam(group.id);
+            if (service !== null) {
+                logger.info(`User already exists`);
+                response = {
+                    text:
+                        'Description notifications have already been enabled for this team.',
+                };
+            } else {
+                await createSchedule(
+                    event,
+                    onceAMinute,
+                    'This is a test message',
+                    {
+                        utc: true,
+                    }
+                );
+                response = {
                     text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${res.data.description}`,
                 };
             }
-
             break;
         case 'disable':
             logger.trace('Case [DISABLE]');
@@ -78,10 +100,15 @@ const handleMessage4Bot = async (event) => {
 
             break;
         case 'clear':
+            logger.trace('Case [CLEAR]');
+            logger.warn('Clearing.....');
             await clearAll(event);
+            response = { text: 'Everything cleared.' };
+            break;
         default:
             logger.warn(`Not a valid command: ${text}`);
             response = { text: 'Command not valid' };
+            break;
     }
     return response;
 };
