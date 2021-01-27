@@ -23,5 +23,5 @@ setInterval(
     86400000
 );
 
-// logger.info('Starting loop.');
-// setInterval(() => announce(), 5000);
+logger.info('Starting loop.');
+setInterval(() => announce(), 60000);
