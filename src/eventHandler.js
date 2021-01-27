@@ -32,6 +32,9 @@ const handleMessage4Bot = async (event) => {
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
     switch (text.toLowerCase()) {
+        case 'ping':
+            await bot.sendMessage(group.id, { text: 'pong' });
+            break;
         case 'enable':
             if (service !== null) {
                 logger.info(`User already exists`);
