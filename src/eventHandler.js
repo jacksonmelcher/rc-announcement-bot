@@ -1,5 +1,5 @@
 import { Service } from 'ringcentral-chatbot/dist/models';
-import { findTeam, createSchedule, clearAll } from './database/index';
+import { findTeam, createSchedule, clearAll, clearOne } from './database/index';
 import log4js from 'log4js';
 
 log4js.configure({
@@ -106,7 +106,7 @@ const handleMessage4Bot = async (event) => {
 
             console.log('temp :>> ', dataValues.data);
 
-            await remove(event);
+            await clearOne(event);
             console.log('task stopped');
             // await clearTeam(group.name, group.id);
             response = {

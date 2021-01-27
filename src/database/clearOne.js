@@ -8,7 +8,7 @@ log4js.configure({
 
 const logger = log4js.getLogger(`CLEAR ONE `);
 
-async function clearOne({ userId, group }) {
+export const clearOne = async ({ userId, group }) => {
     logger.info(
         `Clearing [${{
             name: 'Announce',
@@ -23,4 +23,4 @@ async function clearOne({ userId, group }) {
     await service.destroy();
 
     logger.info('Announcement removed');
-}
+};
