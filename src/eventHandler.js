@@ -10,8 +10,8 @@ log4js.configure({
 const logger = log4js.getLogger('EVENT HANDLER');
 const onceAWeek = '0 10 * * 1';
 const onceAMinute = '* * * * * *';
-// const tokens = args.split(/\s+/);
-// const expression = tokens.slice(0, 5).join(' ');
+const tokens = onceAMinute.split(/\s+/);
+const expression = tokens.slice(0, 5).join(' ');
 
 export const eventHandler = async (event) => {
     const { type, bot, group } = event;
@@ -31,15 +31,24 @@ const handleMessage4Bot = async (event) => {
     const { text, group, bot } = event;
     let service = null;
     let response = 'default';
-    let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
+    let res = 'Cant find description.';
+    try {
+        res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
+    } catch {
+        res = 'Cant find description.';
+    }
+
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
     switch (text.toLowerCase()) {
         case 'ping':
-            await bot.sendMessage(group.id, { text: 'pong' });
+            response = { text: 'pong' };
             break;
         case 'enable':
             logger.trace('Case [ENABLE]');
+            const onceAWeek = '0 10 * * 1';
+            const weekToken = onceAWeek.split(/\s+/);
+            const weekExpression = weekToken.slice(0, 5).join(' ');
 
             service = await findTeam(group.id);
             if (service !== null) {
@@ -51,8 +60,8 @@ const handleMessage4Bot = async (event) => {
             } else {
                 await createSchedule(
                     event,
-                    onceAWeek,
-                    'This is a test message',
+                    weekExpression,
+                    res.data.description,
                     {
                         utc: true,
                     }
@@ -64,6 +73,9 @@ const handleMessage4Bot = async (event) => {
             }
         case 'enable test':
             logger.trace('Case [ENABLE TEST]');
+            const onceAMinute = '* * * * * *';
+            const minuteTokens = onceAMinute.split(/\s+/);
+            const minuteExpression = minuteTokens.slice(0, 5).join(' ');
 
             service = await findTeam(group.id);
             if (service !== null) {
@@ -75,8 +87,8 @@ const handleMessage4Bot = async (event) => {
             } else {
                 await createSchedule(
                     event,
-                    onceAMinute,
-                    'This is a test message',
+                    minuteExpression,
+                    res.data.description,
                     {
                         utc: true,
                     }
