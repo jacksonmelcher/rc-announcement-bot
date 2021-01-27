@@ -65,6 +65,7 @@ const handleMessage4Bot = async (event) => {
             }
         case 'enable test':
             logger.trace('Case [ENABLE TEST]');
+            let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
             service = await findTeam(group.id);
             if (service !== null) {
                 logger.info(`User already exists`);
