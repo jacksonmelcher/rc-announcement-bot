@@ -32,8 +32,6 @@ const handleMessage4Bot = async (event) => {
     let service = null;
     let response = 'default';
 
-    let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
-
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
     switch (text.toLowerCase()) {
@@ -42,6 +40,8 @@ const handleMessage4Bot = async (event) => {
             break;
         case 'enable':
             logger.trace('Case [ENABLE]');
+
+            let res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
             service = await findTeam(group.id);
             if (service !== null) {
                 logger.info(`User already exists`);
