@@ -1,5 +1,6 @@
 import { Service } from 'ringcentral-chatbot/dist/models';
 import { findTeam, createSchedule, clearAll, clearOne } from './database/index';
+import { joinedGroup } from './responses/index';
 import log4js from 'log4js';
 
 log4js.configure({
@@ -32,15 +33,6 @@ const handleMessage4Bot = async (event) => {
     let service = null;
     let response = 'default';
     let description = 'Cant find description.';
-    try {
-        let { data } = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
-        description = data.description;
-    } catch {
-        return {
-            text:
-                'Notifications were not enabled because I was unable to find description. Please make sure the team has a description.',
-        };
-    }
 
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
@@ -50,6 +42,17 @@ const handleMessage4Bot = async (event) => {
             break;
         case 'enable':
             logger.trace('Case [ENABLE]');
+            try {
+                let { data } = await bot.rc.get(
+                    `restapi/v1.0/glip/teams/${group.id}`
+                );
+                description = data.description;
+            } catch {
+                return {
+                    text:
+                        'Notifications were not enabled because I was unable to find description. Please make sure the team has a description.',
+                };
+            }
             const onceAWeek = '0 10 * * 1';
             const weekToken = onceAWeek.split(/\s+/);
             const weekExpression = weekToken.slice(0, 5).join(' ');
@@ -72,6 +75,17 @@ const handleMessage4Bot = async (event) => {
             }
         case 'enable test':
             logger.trace('Case [ENABLE TEST]');
+            try {
+                let { data } = await bot.rc.get(
+                    `restapi/v1.0/glip/teams/${group.id}`
+                );
+                description = data.description;
+            } catch {
+                return {
+                    text:
+                        'Notifications were not enabled because I was unable to find description. Please make sure the team has a description.',
+                };
+            }
             const onceAMinute = '* * * * * *';
             const minuteTokens = onceAMinute.split(/\s+/);
             const minuteExpression = minuteTokens.slice(0, 5).join(' ');
@@ -88,7 +102,17 @@ const handleMessage4Bot = async (event) => {
                     utc: true,
                 });
                 response = {
-                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${description}`,
+                    text: `Description notifications have been enabled. This is a preview of the announcement: `,
+                    attachments: [
+                        {
+                            type: 'Card',
+                            // title: 'Description Announcement ',
+                            text: description,
+                            footnote: {
+                                text: 'Created and maintained by RC on RC',
+                            },
+                        },
+                    ],
                 };
             }
             break;
@@ -109,19 +133,7 @@ const handleMessage4Bot = async (event) => {
 
             break;
         case 'help':
-            await bot.sendMessage(group.id, {
-                // text: 'hey',
-                attachments: [
-                    {
-                        type: 'Card',
-                        // title: 'Description Announcement ',
-                        text: description,
-                        footnote: {
-                            text: 'Created and maintained by RC on RC',
-                        },
-                    },
-                ],
-            });
+            response = joinedGroup('test');
             break;
         case 'clear':
             logger.trace('Case [CLEAR]');
