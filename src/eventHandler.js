@@ -31,11 +31,15 @@ const handleMessage4Bot = async (event) => {
     const { text, group, bot } = event;
     let service = null;
     let response = 'default';
-    let res = 'Cant find description.';
+    let description = 'Cant find description.';
     try {
-        res = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
+        let { data } = await bot.rc.get(`restapi/v1.0/glip/teams/${group.id}`);
+        description = data.description;
     } catch {
-        res = 'Cant find description.';
+        return {
+            text:
+                'Notifications were not enabled because I was unable to find description. Please make sure the team has a description.',
+        };
     }
 
     let args = text.split(' ');
@@ -58,16 +62,11 @@ const handleMessage4Bot = async (event) => {
                         'Description notifications have already been enabled for this team.',
                 };
             } else {
-                await createSchedule(
-                    event,
-                    weekExpression,
-                    res.data.description,
-                    {
-                        utc: true,
-                    }
-                );
+                await createSchedule(event, weekExpression, description, {
+                    utc: true,
+                });
                 response = {
-                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${res.data.description}`,
+                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${description}`,
                 };
                 break;
             }
@@ -85,16 +84,11 @@ const handleMessage4Bot = async (event) => {
                         'Description notifications have already been enabled for this team.',
                 };
             } else {
-                await createSchedule(
-                    event,
-                    minuteExpression,
-                    res.data.description,
-                    {
-                        utc: true,
-                    }
-                );
+                await createSchedule(event, minuteExpression, description, {
+                    utc: true,
+                });
                 response = {
-                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${res.data.description}`,
+                    text: `Description notifications have been enabled. This is a preview of the announcement: \n\n${description}`,
                 };
             }
             break;
@@ -121,7 +115,7 @@ const handleMessage4Bot = async (event) => {
                     {
                         type: 'Card',
                         // title: 'Description Announcement ',
-                        text: res.data.description,
+                        text: description,
                         footnote: {
                             text: 'Created and maintained by RC on RC',
                         },
@@ -216,7 +210,7 @@ const handleBotJoinedGroup = async (event) => {
     await bot.sendMessage(group.id, {
         text:
             `Hi, I'm announcement bot. I will announce the team description every Monday at 10:00 am PST.` +
-            `This is a preview of the announcement: \n\n${res.data.description}. ` +
+            `This is a preview of the announcement: \n\n${description}. ` +
             `\n \n Customization of anouncements and times will be coming in the future.`,
     });
 };
