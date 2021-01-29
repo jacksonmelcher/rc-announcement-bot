@@ -12,8 +12,6 @@ const logger = log4js.getLogger('ANNOUNCE');
 const announce = async () => {
     let services = await Service.findAll({ where: { name: 'Announce' } });
 
-    const [{ dataValues }] = await Bot.findAll();
-
     for (const s of services) {
         const currentTimestamp = moment
             .tz(new Date(), 'America/Los_Angeles')
@@ -24,13 +22,8 @@ const announce = async () => {
             tz: 'America/Los_Angeles',
         });
 
-        console.log('EXPRESSION: ' + s.data.expression);
-
         const prevTimestamp = interval.prev()._date;
 
-        console.log(
-            'Loop time: ' + currentTimestamp.format('MMMM Do YYYY, h:mm:ss a')
-        );
         if (currentTimestamp - prevTimestamp === 0) {
             const bot = await Bot.findByPk(s.botId);
             try {
@@ -38,20 +31,32 @@ const announce = async () => {
                     'Reminded at: ' +
                         currentTimestamp.format('MMMM Do YYYY, h:mm:ss a')
                 );
-                await bot.sendMessage(s.groupId, { text: s.data.message });
+                await bot.sendMessage(s.groupId, {
+                    text: 'Help',
+                    attachments: [
+                        {
+                            type: 'Card',
+                            // title: 'Description Announcement ',
+                            text: s.data.message,
+                            footnote: {
+                                text: 'Created and maintained by RC on RC',
+                            },
+                        },
+                    ],
+                });
+                const newinterval = moment.tz(
+                    interval.next()._date.toString(),
+                    'America/Los_Angeles'
+                );
+                console.log(
+                    'Next reminder: ' +
+                        newinterval.format('MMMM Do YYYY, h:mm:ss a')
+                );
             } catch (e) {
                 // catch the exception so that it won't break the for loop
                 console.error(e);
             }
         }
-
-        const newinterval = moment.tz(
-            interval.next()._date.toString(),
-            'America/Los_Angeles'
-        );
-        console.log(
-            'Next reminder: ' + newinterval.format('MMMM Do YYYY, h:mm:ss a')
-        );
     }
 };
 
