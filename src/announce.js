@@ -32,16 +32,7 @@ const announce = async () => {
                         currentTimestamp.format('MMMM Do YYYY, h:mm:ss a')
                 );
                 await bot.sendMessage(s.groupId, {
-                    attachments: [
-                        {
-                            type: 'Card',
-                            // title: 'Description Announcement ',
-                            text: s.data.message,
-                            footnote: {
-                                text: 'Created and maintained by RC on RC',
-                            },
-                        },
-                    ],
+                    text: s.data.message,
                 });
                 const newinterval = moment.tz(
                     interval.next()._date.toString(),
