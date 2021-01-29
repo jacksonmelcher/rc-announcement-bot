@@ -1,20 +1,17 @@
-export const joinedGroup = {
-    attachments: [
-        {
-            type: 'Card',
-
-            author: {
-                name: 'Reminder Bot',
-            },
-            title: 'Instructions',
-            text:
-                'Hi, I am a reminder bot. I can be used to remind you, or a whole team, of events at a specified ' +
-                'time.\nTo use me for personal use, you can send me a direct message or add me to a team.',
-
-            footnote: {
+export const joinedGroup = (description) => {
+    return {
+        attachments: [
+            {
+                type: 'Card',
+                title: 'Instructions',
                 text:
-                    'Created and maintained by RC on RC. Icons made by [https://www.freepik.com](Freepik)from https://www.flaticon.com/',
+                    'Hi, I am a bot that posts your team description on a weekly basis (Every Monday at 10:00am PST). \n\nTo use me type **@Descritpion Reminder enable**.\n To disable notifications type **@Descritpion Reminder disable** ',
+
+                footnote: {
+                    text:
+                        'Created and maintained by RC on RC. Icon made by [Freepik](https://www.freepik.com) from https://www.flaticon.com/',
+                },
             },
-        },
-    ],
+        ],
+    };
 };
