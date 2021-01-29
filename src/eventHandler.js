@@ -114,6 +114,21 @@ const handleMessage4Bot = async (event) => {
             };
 
             break;
+        case 'help':
+            await bot.sendMessage(group.id, {
+                // text: 'hey',
+                attachments: [
+                    {
+                        type: 'Card',
+                        // title: 'Description Announcement ',
+                        text: res.data.description,
+                        footnote: {
+                            text: 'Created and maintained by RC on RC',
+                        },
+                    },
+                ],
+            });
+            break;
         case 'clear':
             logger.trace('Case [CLEAR]');
             logger.warn('Clearing.....');
