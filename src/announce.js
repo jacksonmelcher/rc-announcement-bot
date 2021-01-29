@@ -32,7 +32,6 @@ const announce = async () => {
                         currentTimestamp.format('MMMM Do YYYY, h:mm:ss a')
                 );
                 await bot.sendMessage(s.groupId, {
-                    text: 'Help',
                     attachments: [
                         {
                             type: 'Card',
