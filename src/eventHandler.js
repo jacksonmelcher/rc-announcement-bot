@@ -102,17 +102,7 @@ const handleMessage4Bot = async (event) => {
                     utc: true,
                 });
                 response = {
-                    text: `Description notifications have been enabled. This is a preview of the announcement: `,
-                    attachments: [
-                        {
-                            type: 'Card',
-                            // title: 'Description Announcement ',
-                            text: description,
-                            footnote: {
-                                text: 'Created and maintained by RC on RC',
-                            },
-                        },
-                    ],
+                    text: `Description notifications have been enabled. This is a preview of the announcement:\n**${description}** `,
                 };
             }
             break;
@@ -133,7 +123,7 @@ const handleMessage4Bot = async (event) => {
 
             break;
         case 'help':
-            response = joinedGroup('test');
+            response = joinedGroup(description);
             break;
         case 'clear':
             logger.trace('Case [CLEAR]');
