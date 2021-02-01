@@ -32,7 +32,7 @@ const handleMessage4Bot = async (event) => {
     const { text, group, bot } = event;
     let service = null;
     let response = 'default';
-    let description = 'Cant find description.';
+    let description = 'No description listed. Please add a team description.';
 
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);

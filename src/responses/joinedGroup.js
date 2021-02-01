@@ -6,12 +6,12 @@ export const joinedGroup = (description) => {
                 title: 'Instructions',
                 text:
                     `Hi, I am a bot that posts your team description on a weekly basis (Every Monday at 10:00am PST).` +
-                    `\n\nTo use me type **@Descritpion Reminder enable**.` +
-                    `\nTo disable notifications type **@Descritpion Reminder disable** ` +
-                    `Description preview: **${description}**`,
+                    `\n\nTo use me type **@Description Reminder enable**.` +
+                    `\nTo disable notifications type **@Description Reminder disable** ` +
+                    `\n\nDescription preview: **${description}**`,
                 footnote: {
                     text:
-                        'Created and maintained by RC on RC. Icon made by [Freepik](https://www.freepik.com) from https://www.flaticon.com/',
+                        'Created and maintained by RC on RC. Icon made by [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)',
                 },
             },
         ],
