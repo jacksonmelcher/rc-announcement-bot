@@ -31,12 +31,16 @@ const announce = async () => {
                     'Reminded at: ' +
                         currentTimestamp.format('MMMM Do YYYY, h:mm:ss a')
                 );
+                let { data } = await bot.rc.get(
+                    `restapi/v1.0/glip/teams/${s.groupId}`
+                );
+                let description = data.description;
+
                 await bot.sendMessage(s.groupId, {
                     attachments: [
                         {
                             type: 'Card',
-                            // title: 'Description Announcement ',
-                            text: s.data.message,
+                            text: description,
                             footnote: {
                                 text: 'Created and maintained by RC on RC',
                             },
