@@ -4,7 +4,7 @@
     "main": "index.js",
     "license": "MIT",
     "scripts": {
-        "dev": "nodemon -r @babel/register -r dotenv/config src/index.js",
+        "start:dev": "nodemon -r @babel/register -r dotenv/config src/index.js",
         "test": "jest --watch",
         "ngrok": "npx ngrok http 3000",
         "build": "babel src -d dist",

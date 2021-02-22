@@ -36,10 +36,19 @@ const handleMessage4Bot = async (event) => {
 
     let args = text.split(' ');
     logger.info(`Args [ ${args} ]`);
+
     switch (text.toLowerCase()) {
         case 'ping':
             response = { text: 'pong' };
             break;
+        case 'webhook clean':
+            if (bot) {
+                let { data } = await bot.rc.get('/restapi/v1.0/subscription');
+                console.log(data);
+            }
+            {
+                return `There are: ${data.records.size()}`;
+            }
         case 'enable':
             logger.trace('Case [ENABLE]');
             try {
@@ -115,8 +124,8 @@ const handleMessage4Bot = async (event) => {
             console.log('temp :>> ', dataValues.data);
 
             await clearOne(event);
-            console.log('task stopped');
-            // await clearTeam(group.name, group.id);
+
+            logger.info('Reminder stopped.');
             response = {
                 text: 'Announcement notifications have been disabled.',
             };

@@ -31,8 +31,21 @@ const announce = async () => {
                     'Reminded at: ' +
                         currentTimestamp.format('MMMM Do YYYY, h:mm:ss a')
                 );
+                let { data } = await bot.rc.get(
+                    `restapi/v1.0/glip/teams/${s.groupId}`
+                );
+                let description = data.description;
+
                 await bot.sendMessage(s.groupId, {
-                    text: s.data.message,
+                    attachments: [
+                        {
+                            type: 'Card',
+                            text: description,
+                            footnote: {
+                                text: 'Created and maintained by RC on RC',
+                            },
+                        },
+                    ],
                 });
                 const newinterval = moment.tz(
                     interval.next()._date.toString(),
