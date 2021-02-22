@@ -37,15 +37,7 @@ const announce = async () => {
                 let description = data.description;
 
                 await bot.sendMessage(s.groupId, {
-                    attachments: [
-                        {
-                            type: 'Card',
-                            text: description,
-                            footnote: {
-                                text: 'Created and maintained by RC on RC',
-                            },
-                        },
-                    ],
+                    text: description,
                 });
                 const newinterval = moment.tz(
                     interval.next()._date.toString(),
