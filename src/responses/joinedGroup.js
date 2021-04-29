@@ -6,8 +6,8 @@ export const joinedGroup = (description) => {
                 title: 'Instructions',
                 text:
                     `Hi, I am a bot that posts your team description on a weekly basis (Every Monday at 10:00am PST).` +
-                    `\n\nTo use me type **@Description Reminder enable**.` +
-                    `\nTo disable notifications type **@Description Reminder disable** ` +
+                    `\n\nTo use me type **@Description Announcement enable**.` +
+                    `\nTo disable notifications type **@Description Announcement disable** ` +
                     `\n\nDescription preview: **${description}**`,
                 footnote: {
                     text:
